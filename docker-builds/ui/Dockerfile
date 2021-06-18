@@ -19,16 +19,27 @@ RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN mkdir -p /root/.config/truffle/
 RUN npm install --global truffle@~5.3.0
 
+
+RUN lein garden once
+RUN lein deps
+RUN yarn deps
+
 RUN lein garden once  \
     && lein deps \
     && yarn deps
 
+master
 RUN truffle compile
 RUN lein cljsbuild once "ui"
 
 FROM prerendercloud/webserver:latest
 MAINTAINER "Filip Bielejec" <filip@district0x.io>
+
+RUN apt update && apt-get upgrade -yqq \
+=======
 RUN apt-get update && apt-get upgrade -yqq \
+master
+
     && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
